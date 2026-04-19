@@ -1,0 +1,106 @@
+# 📄 Lead Generation + CRM Tool - Technical Documentation
+
+This document provides a detailed end-to-end overview of the Lead Generation and CRM system implemented for identifying and managing business leads without websites.
+
+---
+
+## 📌 1. Project Overview
+The tool is designed for "feet-on-the-ground" or remote sales professionals to:
+1.  **Discover** local businesses via Google Maps.
+2.  **Filter** those lacking a digital presence (no website).
+3.  **Manage** the outreach lifecycle (Status tracking, Notes, Follow-ups).
+4.  **Communicate** instantly via WhatsApp or Phone from a mobile device.
+
+---
+
+## 🏗 2. System Architecture
+
+### 🛡 Backend: FastAPI (Python)
+- **Framework**: FastAPI for high-performance async API processing.
+- **External API**: Integrates with **SerpAPI (Google Maps Engine)** to fetch real-time business data.
+- **Service Layer**: 
+    - `lead_service.py`: Handles raw data extraction and the scoring algorithm.
+    - `supabase_client.py`: Manages the connection pool to the Supabase PostgreSQL database.
+- **Scoring Logic**:
+    - **Base Rule**: `No Website = +5 points`.
+    - **Filtering**: Only leads with a score of 5 or higher are processed and stored.
+
+### 🎨 Frontend: React + TypeScript (Vite)
+- **Aesthetics**: **Premium Glassmorphism** design using Vanilla CSS. 
+    - Deep dark theme (#0f172a) with violet-to-indigo gradients.
+    - Blur effects and semi-transparent layers for a modern "Apple-style" feel.
+- **Components**:
+    - `App.tsx`: The main dashboard controller.
+    - `LeadCard.tsx`: A self-contained CRM engine for each lead.
+- **Mobile First**: Built with flexible grid layouts (minmax) and large touch targets for easy use on smartphones.
+
+---
+
+## 🗄 3. Database Schema (Supabase)
+
+Table Name: leads
+
+| Column | Type | Description |
+| :--- | :--- | :--- |
+| id | UUID | Primary Key (Auto-generated). |
+| name | Text | Business name. |
+| phone | Text | Contact number (used for deduplication). |
+| address | Text | Physical location. |
+| website | Text | Website URL (usually NULL for hot leads). |
+| score | Integer | System-calculated priority (High priority >= 8). |
+| status | Text | Workflow state (New, Contacted, Interested, etc.). |
+| notes | Text | Rich text notes from sales calls. |
+| next_followup | Timestamp | Scheduled date for next outreach. |
+| last_contacted | Timestamp | Auto-updated when status is changed. |
+| created_at | Timestamp | Entry creation time. |
+
+---
+
+## 🔄 4. The Data Lifecycle
+
+1.  Search Phase: User enters "Gym" and "Vizag" in the frontend.
+2.  Fetching Phase: Backend queries SerpAPI. It receives a list of businesses including their website and contact info.
+3.  Processing Phase:
+    - Backend checks if website is empty.
+    - Assigns score: 5.
+    - Sanitizes data.
+4.  Storage Phase:
+    - Backend checks Supabase for duplicates (matched by Phone or Name+Address).
+    - If unique, the lead is persisted.
+5.  CRM Phase: User opens the "CRM" tab, updates the status to "Interested", adds a note "Wants a demo on Monday", and sets a follow-up date.
+
+---
+
+## 📱 5. Key CRM Interaction Features
+
+### Direct Outreach
+- Call Button: Uses tel: protocol to trigger the phone's native dialer.
+- WhatsApp Button: Uses wa.me/ protocol to open a chat directly with the business number.
+
+### Smart Notifications
+- Follow-up Highlight: Leads with a next_followup date of today or earlier are highlighted in the "Today's Follow-ups" tab.
+- Hot Leads: A one-click filter to show only leads with the highest conversion probability.
+
+---
+
+## 🚀 6. Deployment Guide
+
+### Backend (Render/Railway)
+1.  Connect GitHub repo.
+2.  Set Root Directory to backend/.
+3.  Build Command: pip install -r requirements.txt.
+4.  Start Command: uvicorn main:app --host 0.0.0.0 --port 10000.
+5.  Add environment variables: SUPABASE_URL, SUPABASE_KEY, SERPAPI_KEY.
+
+### Frontend (Vercel)
+1.  Connect GitHub repo.
+2.  Set Root Directory to frontend/.
+3.  Vercel will auto-detect Vite.
+4.  Important: Update API_BASE_URL in src/api.ts to your backend's live URL.
+
+---
+
+## 🛠 7. Future Expansion (Roadmap)
+- Social Presence Check: Adding +2 points if no Instagram or Facebook page is found.
+- Email Outreach: Automated email templates integration.
+- Local Storage: Offline support for field agents in low-connectivity areas.

@@ -1,0 +1,68 @@
+# 🚀 How to Run the Project Locally
+
+Follow these steps to get the Lead Generation + CRM tool running on your local machine.
+
+## 🐍 1. Running the Backend (FastAPI)
+
+1.  **Navigate to the backend directory**:
+    ```bash
+    cd backend
+    ```
+
+2.  **Create and activate a virtual environment (Optional but Recommended)**:
+    ```bash
+    python -m venv venv
+    # Windows:
+    .\venv\Scripts\activate
+    # Mac/Linux:
+    source venv/bin/activate
+    ```
+
+3.  **Install dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Configure Environment Variables**:
+    Create a `.env` file in the `backend/` folder and add your keys:
+    ```env
+    SUPABASE_URL=your_supabase_url
+    SUPABASE_KEY=your_supabase_anon_key
+    SERPAPI_KEY=your_serpapi_key
+    ```
+
+5.  **Start the server**:
+    ```bash
+    uvicorn main:app --reload --port 10000
+    ```
+    The API will be available at: `http://localhost:10000`
+
+---
+
+## ⚛️ 2. Running the Frontend (React + Vite)
+
+1.  **Navigate to the frontend directory**:
+    ```bash
+    cd frontend
+    ```
+
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+
+3.  **Configure API URL (Optional)**:
+    If your backend is running on a different port than 10000, update the `API_BASE_URL` in `src/api.ts`.
+
+4.  **Start the development server**:
+    ```bash
+    npm run dev
+    ```
+    The application will be available at: `http://localhost:5173` (or the port shown in your terminal).
+
+---
+
+## 🛠 Troubleshooting
+- **Backend CORS Errors**: Ensure the backend's `allow_origins` is set to `["*"]` or your specific frontend URL in `main.py`.
+- **SerpAPI Key**: Ensure you have a valid SerpAPI key, otherwise lead generation will return an empty list.
+- **Supabase Table**: Ensure you have created the `leads` table using the SQL provided in the documentation.
